@@ -1,0 +1,20 @@
+
+services:
+  ros2_handpose:
+    image: humble
+    container_name: project_container
+    network_mode: host
+    privileged: true
+    environment:
+      - DISPLAY=host.docker.internal:0
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./ros2_ws:/ros2_ws
+    devices:
+    - /dev/video0:/dev/video0
+    - /dev/video1:/dev/video1
+    - /dev/video2:/dev/video2
+    working_dir: /ros2_ws
+    stdin_open: true
+    tty: true
+    command: bash

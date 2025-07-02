@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="conveyor_belt">
+
+  <xacro:macro name="conveyor_belt" params="prefix:=''">
+    
+    <!-- base_link link -->
+    <link name="${prefix}base_link" />
+
+    <!-- Fixed joint to belt_base -->
+    <joint name="${prefix}fixed_to_base" type="fixed">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}base"/>
+    </joint>
+
+    <!-- Belt Base (updated height to 0.3) -->
+    <link name="${prefix}base">
+      <collision>
+        <origin xyz="0 0 0.15" rpy="0 0 0"/>
+        <geometry>
+          <box size="10.2 1.2 0.3"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="0 0 0.15" rpy="0 0 0"/>
+        <geometry>
+          <box size="10.2 1.2 0.3"/>
+        </geometry>
+        <material name="Silver">
+          <color rgba="0.8 0.8 0.8 1.0"/>
+        </material>
+      </visual>
+      <inertial>
+        <origin xyz="0 0 0.15" rpy="0 0 0"/>
+        <mass value="6"/> <!-- Increased due to size -->
+        <inertia ixx="4.5" ixy="0.0" ixz="0.0" iyy="4.5" iyz="0.0" izz="4.5"/>
+      </inertial>
+    </link>
+
+    <!-- Fixed joint to belt_surface -->
+    <joint name="${prefix}fixed_surface" type="fixed">
+      <parent link="${prefix}base"/>
+      <child link="${prefix}surface"/>
+    </joint>
+
+    <!-- Belt Surface -->
+    <link name="${prefix}surface">
+      <collision>
+        <origin xyz="0 0 0.25" rpy="0 0 0"/>
+        <geometry>
+          <box size="10 1 0.2"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="0 0 0.25" rpy="0 0 0"/>
+        <geometry>
+          <box size="10 1 0.2"/>
+        </geometry>
+        <material name="Black">
+          <color rgba="0.0 0.0 0.0 1.0"/>
+        </material>
+      </visual>
+      <inertial>
+        <origin xyz="0 0 0.25" rpy="0 0 0"/>
+        <mass value="1"/>
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      </inertial>
+    </link>
+
+    <gazebo reference="${prefix}surface">
+      <mu1>0</mu1>
+      <mu2>0</mu2>
+      <material>Gazebo/FlatBlack</material>
+    </gazebo>
+
+    <gazebo reference="${prefix}base">
+      <material>Gazebo/Silver</material>
+    </gazebo>
+
+    <gazebo>
+      <static>true</static>
+    </gazebo>
+
+  </xacro:macro>
+
+  <xacro:conveyor_belt prefix="belt_"/>
+</robot>

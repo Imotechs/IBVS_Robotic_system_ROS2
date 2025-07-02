@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="conveyor_belt">
+  <xacro:macro name="conveyor_belt" params="prefix:='belt_'">
+    <!-- Base Link -->
+    <link name="${prefix}base_link">
+      <inertial>
+        <mass value="5"/>
+        <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+      </inertial>
+    </link>
+
+    <!-- Belt Surface -->
+    <link name="${prefix}surface">
+      <collision>
+        <geometry>
+          <box size="2.0 0.5 0.05"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <box size="2.0 0.5 0.05"/>
+        </geometry>
+        <material name="Black"/>
+      </visual>
+      <inertial>
+        <mass value="0.5"/>
+        <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+      </inertial>
+    </link>
+
+    <!-- Moving joint -->
+    <joint name="${prefix}move_joint" type="prismatic">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}surface"/>
+      <axis xyz="1 0 0"/>
+      <limit effort="100" velocity="1.0" lower="-1.0" upper="1.0"/>
+    </joint>
+
+    <gazebo reference="${prefix}surface">
+      <mu1>0.1</mu1>
+      <mu2>0.1</mu2>
+      <material>Gazebo/Black</material>
+      <surface>
+        <friction>
+          <ode>
+            <slip>1.0</slip>
+          </ode>
+        </friction>
+      </surface>
+    </gazebo>
+
+    <!-- ROS 2 Control -->
+    <ros2_control name="${prefix}conveyor_control" type="system">
+      <hardware>
+        <plugin>gz_ros2_control/GzSystem</plugin>
+      </hardware>
+      <joint name="${prefix}move_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+    </ros2_control>
+  </xacro:macro>
+  
+  <xacro:conveyor_belt prefix="belt_"/>
+</robot>
