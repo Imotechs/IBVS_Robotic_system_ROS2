@@ -52,6 +52,7 @@
 
   <!-- <xacro:include filename="$(find ur5_robotiq_description)/urdf/inc/ur_transmissions.xacro" /> -->
   <xacro:include filename="$(find ur5_robotiq_description)/urdf/inc/ur_common.xacro" />
+  <xacro:include filename="$(find robot_bringup)/urdf/camera.urdf.xacro"/>
 
   <xacro:macro name="ur_robot" params="
     name
@@ -474,6 +475,7 @@
       <parent link="${tf_prefix}tool0"/>
       <child link="${tf_prefix}ee_link"/>
     </joint>
+    <xacro:add_camera parent_link="${tf_prefix}flange"/>
 
     <!-- <link name="robotiq_coupler">
       <visual>

@@ -17,7 +17,7 @@ find_package(xacro REQUIRED)
 
 # Copy necessary files to designated locations in the project
 install (
-  DIRECTORY config launch models worlds scripts urdf
+  DIRECTORY config launch models worlds
   DESTINATION share/${PROJECT_NAME}
 )
 

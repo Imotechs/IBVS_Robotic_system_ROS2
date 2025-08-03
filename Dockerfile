@@ -32,6 +32,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-ros2-controllers \
     ros-humble-ros2-control-test-assets \
     ros-humble-gripper-controllers \
+    ros-humble-ros-gz-bridge \
+    ros-humble-ros-gz-sim  \
+    ros-humble-controller-manager \
+    ros-humble-xacro \ 
+    ros-humble-ign-ros2-control \
     # Gazebo ROS integration
     ros-humble-gazebo-ros-pkgs \
     ros-humble-gazebo-ros2-control \
@@ -52,7 +57,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir \
     matplotlib \
     pyserial \
-    mediapipe \
+    # mediapipe \
     pyrealsense2 \
     "numpy<2.0"
 
@@ -79,9 +84,8 @@ RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc && \
 
 CMD ["bash"]
 
-
-
-
+sudo apt install ros-humble-ign-ros2-control
+sudo apt install ros-humble-ros-gz-sim-demos
 
 # sudo apt update
 # sudo apt install ros-humble-ros2-control ros-humble-controller-manager
@@ -98,5 +102,38 @@ CMD ["bash"]
 # sudo apt install ros-humble-ur-description
 
 # sudo apt update
-# sudo apt install ros-humble-ros-gz-bridge ros-humble-ros2-controllersros-humble-ros-gz-sim ros-humble-controller-manager ros-humble-xacro ros-humble-ur-description
+# sudo 
 # ros-humble-gz-ros2-control
+
+"""
+To be added
+
+apt update
+apt install ros-humble-cv-bridge python3-opencv
+
+"""
+
+
+cd /ros2_ws/src
+git clone https://github.com/IFRA-Cranfield/IFRA_ConveyorBelt.git
+cd /ros2_ws
+colcon build --packages-select ifra_conveyorbelt
+source install/setup.bash
+
+ros2 service call /conveyor/control ifra_conveyorbelt/srv/SetConveyorPower "{power: 50.0}"
+
+
+'''
+Gazebo Classic 11.10.2 (runs with gazebo)
+
+Ignition Gazebo 6.16.0 (runs with ign gazebo)
+
+sudo apt-get update
+sudo apt-get install ros-humble-ros-gz-sim ros-humble-ros-gz-sim-demos
+sudo apt install ros-humble-ign-ros2-control
+sudo apt install ros-humble-ros-gz-sim-demos
+sudo apt install ros-humble-ros-ign-gazebo
+sudo apt install ros-humble-gz-ros2-control ros-humble-gz-ros2-control-demos
+
+https://www.linkedin.com/pulse/gazebo-custom-plugin-ros2-step-by-step-guide-shantanu-parab/?trackingId=2iAHO8GATRWbAh1hD%2BvEMQ%3D%3D
+'''

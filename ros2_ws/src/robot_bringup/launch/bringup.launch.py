@@ -9,8 +9,8 @@ from launch_ros.actions import Node
 from launch.event_handlers import OnProcessExit
 from ament_index_python.packages import get_package_share_directory
 from launch.conditions import IfCondition
-from moveit_configs_utils import MoveItConfigsBuilder
-
+from launch.substitutions import Command, PathJoinSubstitution
+from launch_ros.substitutions import FindPackageShare
 import rclpy.logging
 logger = rclpy.logging.get_logger("ur5_2f85.launch")
 
@@ -52,24 +52,15 @@ def load_robot(context, *args, **kwargs):
     robot_name = LaunchConfiguration('robot_name', default='ridgeback_ur5')
     namespace = LaunchConfiguration('namespace', default='')
     gripper_name = LaunchConfiguration('gripper_name', default='robotiq_2f_85')
-    position_x = LaunchConfiguration('position_x', default='0.0')
+    position_x = LaunchConfiguration('position_x', default='0.2')
     position_y = LaunchConfiguration('position_y', default='0.0')
     orientation_yaw = LaunchConfiguration('orientation_yaw', default='0.0')
 
     robot_name_val = robot_name.perform(context)
     namespace_val = namespace.perform(context)
     gripper_name_val = gripper_name.perform(context)
-    logger.info(f"Loading Kuka Robot [{gripper_name_val}] with name: {robot_name_val}")
-    
-    # if gripper_name_val == "robotiq_2f_85":
-    #     controller_yaml = "config/kuka_2f85_controllers.yaml"
-    #     moveit_pkg = "kuka_2f85_moveit"
-    # elif gripper_name_val == "robotiq_2f_140":
-    #     controller_yaml = "config/kuka_2f140_controllers.yaml"
-    #     moveit_pkg = "kuka_2f140_moveit"
-    # else:
-    #     controller_yaml = "config/kuka_controllers.yaml"
-    #     moveit_pkg = "kuka_moveit"
+    logger.info(f"Loading Robot [{gripper_name_val}] with name: {robot_name_val}")
+
 
     controller_yaml = "config/ur5_2f85_controllers.yaml"
     moveit_pkg = "ridgeback_ur5_moveit_config"
@@ -82,7 +73,7 @@ def load_robot(context, *args, **kwargs):
         root_key=namespace_val
     )
 
-    print("controller file: "+str(controller_file))
+    # print("controller file: "+str(controller_file))
 
     # Loading Robot Model
     robot_xacro = Command([
@@ -104,17 +95,17 @@ def load_robot(context, *args, **kwargs):
 
     # Spawn Robot in Gazebo
     spawn_robot_node = Node(
-        package="ros_gz_sim",
-        executable="create",
+        package="gazebo_ros",
+        executable="spawn_entity.py",
         arguments=[
             "-topic", f"{namespace_val}/robot_description",
-            "-name", robot_name,
-            "-robot_namespace", namespace,
+            "-entity", robot_name_val,
             "-x", position_x,
             "-y", position_y,
+            "-z", "0.8",
             "-Y", orientation_yaw,
         ],
-        output="both"
+        output="screen"
     )
 
     # Load Controllers
@@ -156,96 +147,6 @@ def load_robot(context, *args, **kwargs):
             ]
         )
     )
-
-    # moveit_config = (
-    #     MoveItConfigsBuilder("kr70_r2100", package_name=moveit_pkg)
-    #     .robot_description(
-    #         file_path="config/kr70_r2100.urdf.xacro",
-    #         mappings={
-    #             "robot_name": robot_name_val,
-    #             "namespace": namespace_val,
-    #             "gripper_name": gripper_name_val,
-    #             "controller_file": controller_file,
-    #         }
-    #     )
-    #     .planning_pipelines("pilz_industrial_motion_planner")
-    #     .joint_limits(file_path="config/joint_limits.yaml")
-    #     .robot_description_kinematics(file_path="config/kinematics.yaml")
-    #     .robot_description_semantic(file_path="config/kr70_r2100.srdf")
-    #     .trajectory_execution(file_path="config/moveit_controllers.yaml")
-    #     .pilz_cartesian_limits(file_path="config/pilz_cartesian_limits.yaml")
-    #     .to_moveit_configs()
-    # )
-
-    # planning_scene_parameters={
-    #     "publish_planning_scene": True,
-    #     "publish_geometry_updates": True,
-    #     "publish_state_updates": True,
-    #     "publish_transforms_updates": True,
-    #     "publish_robot_description": True,
-    #     "publish_robot_description_semantic": True
-    # }
-
-    # ompl_planning_pipeline_config = {
-    #     "ompl": {
-    #         "planning_plugin": "ompl_interface/OMPLPlanner",
-    #         "request_adapters": "default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/ResolveConstraintFrames default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints",
-    #         "start_state_max_bounds_error": 0.1,
-    #     },
-    # }
-
-    # ompl_planning_yaml = load_yaml(
-    #     get_package_share_directory(moveit_pkg), "config/ompl_planning.yaml"
-    # )
-
-    # ompl_planning_pipeline_config["ompl"].update(ompl_planning_yaml)
-
-    # pilz_pipeline = {
-    #         'pilz_industrial_motion_planner': {
-    #         'planning_plugin': 'pilz_industrial_motion_planner/CommandPlanner', 
-    #         # 'request_adapters': 'default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints', 
-    #         "request_adapters": """ """,
-    #         "start_state_max_bounds_error": 0.1,
-    #         'default_planner_config': 'PTP', 
-    #         'capabilities': 'pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService'
-    #     }
-    # }
-
-    # move_group_node = Node(
-    #     package="moveit_ros_move_group",
-    #     executable="move_group",
-    #     namespace=namespace_val,
-    #     output="screen",
-    #     parameters=[
-    #         moveit_config.to_dict(),
-    #         planning_scene_parameters,
-    #         ompl_planning_pipeline_config,
-    #         pilz_pipeline,
-    #         {"use_sim_time": use_sim_time}
-    #     ]
-    # )
-
-    # load_move_group = RegisterEventHandler(
-    #     event_handler=OnProcessExit(
-    #         target_action=robotiq_controller,
-    #         on_exit=[move_group_node]
-    #     )
-    # )
-
-    # # *** PLANNING CONTEXT *** #
-    # # Robot description SRDF
-    # robot_description_semantic_config = load_file(moveit_pkg, "config/kr70_r2100.srdf")
-    # robot_description_semantic = {"robot_description_semantic": robot_description_semantic_config}
-
-    # # Kinematics YAML file
-    # kinematics_yaml = load_yaml(get_package_share_directory(moveit_pkg), "config/kinematics.yaml")
-
-    # MoveInterface = Node(
-    #     package="control_scripts",
-    #     executable="move_robot",
-    #     output="screen",
-    #     parameters=[robot_description, robot_description_semantic, kinematics_yaml, {"use_sim_time": True}, {"ENV_PARAM": "gazebo"}],
-    # )
 
     return [
         DeclareLaunchArgument(
@@ -293,27 +194,97 @@ def load_robot(context, *args, **kwargs):
         # MoveInterface
     ]
 
-def generate_launch_description():
-    ign_gz = LaunchConfiguration('ign_gz', default='True')
 
+
+def generate_launch_description():
+    ign_gz = LaunchConfiguration('ign_gz', default='false')
+    
     # Loading Gazebo
-    world = os.path.join(get_package_share_directory("ridgeback_ur5_gazebo"), "worlds/empty_world.sdf")
-    ign_gazebo_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [os.path.join(get_package_share_directory("ros_gz_sim"), "launch"), "/gz_sim.launch.py"]
-        ),
-        launch_arguments={'gz_args': [world, ' -r -v1']}.items(),
-        condition=IfCondition(ign_gz)
-    )
+    world = os.path.join(get_package_share_directory("ridgeback_ur5_gazebo"), "worlds/empty.world")
+    gazebo_classic_node = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                [os.path.join(get_package_share_directory("gazebo_ros"), "launch"), "/gazebo.launch.py"]
+                    ),
+                    launch_arguments={
+                        'world': world,
+                        'verbose': 'true',
+                        'pause': 'false'
+                    }.items(),
+                )
+
+
+    pkg_dir = get_package_share_directory('ur5_robotiq_description')
+
+    robot_xacro = Command([
+        'xacro ', os.path.join(pkg_dir, 'urdf/ur5_2f85/ur5_2f85_main.urdf.xacro'),
+        ])
+    robot_description = {"robot_description": robot_xacro}
+
+    controller_config = PathJoinSubstitution([
+                    FindPackageShare("ridgeback_ur5_gazebo"),
+                    "config",
+                    "ur5_2f85_controllers.yaml"
+                        ])
+    manager_node =Node(
+            package='controller_manager',
+            executable='ros2_control_node',
+                    parameters=[robot_description, controller_config],
+                    output='screen'
+                )
 
     return LaunchDescription([
-        DeclareLaunchArgument(
-            name="ign_gz",
-            default_value='True',
-            description="Use gazebo simulation",
-            choices=["True", "False"]
-        ),
         
-        ign_gazebo_node,
+        manager_node,
+        gazebo_classic_node,
         OpaqueFunction(function=load_robot)
     ])
+
+# def generate_launch_description():
+#     ign_gz = LaunchConfiguration('ign_gz', default='True')
+    
+#     # Loading Gazebo
+#     world = os.path.join(get_package_share_directory("ridgeback_ur5_gazebo"), "worlds/empty.world")
+#     gazebo_classic_node = IncludeLaunchDescription(
+#             PythonLaunchDescriptionSource(
+#                 [os.path.join(get_package_share_directory("gazebo_ros"), "launch"), "/gazebo.launch.py"]
+#             ),
+#             launch_arguments={
+#                 'world': world,
+#                 'verbose': 'true',
+#                 'pause': 'false'
+#             }.items(),
+#             condition=IfCondition(ign_gz)
+#         )
+
+#     from launch.substitutions import Command, PathJoinSubstitution
+#     from launch_ros.substitutions import FindPackageShare
+#     pkg_dir = get_package_share_directory('ur5_robotiq_description')
+
+#     robot_xacro = Command([
+#         'xacro ', os.path.join(pkg_dir, 'urdf/ur5_2f85/ur5_2f85_main.urdf.xacro'),
+#         ])
+#     robot_description = {"robot_description": robot_xacro}
+
+#     controller_config = PathJoinSubstitution([
+#                     FindPackageShare("ridgeback_ur5_gazebo"),
+#                     "config",
+#                     "ur5_2f85_controllers.yaml"
+#                         ])
+#     manager_node =Node(
+#             package='controller_manager',
+#             executable='ros2_control_node',
+#                     parameters=[robot_description, controller_config],
+#                     output='screen'
+#                 )
+
+#     return LaunchDescription([
+#         DeclareLaunchArgument(
+#             name="ign_gz",
+#             default_value='True',
+#             description="Use gazebo simulation",
+#             choices=["True", "False"]
+#         ),
+#         manager_node,
+#         gazebo_classic_node,
+#         OpaqueFunction(function=load_robot)
+#     ])

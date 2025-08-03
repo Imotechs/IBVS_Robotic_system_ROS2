@@ -4,7 +4,7 @@
   <name>ridgeback_ur5_gazebo</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="adzembehj@gmail.com">Joshua</maintainer>
+  <maintainer email="anubhavsingh55182@gmail.com">anubhav1772</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

@@ -152,7 +152,21 @@ def generate_launch_description():
         default_value='0.0',
         description='yaw angle of initial orientation, radians')
 
- 
+    # Include Robot State Publisher launch file if enabled
+    # robot_state_publisher_cmd = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource([
+    #         os.path.join(pkg_share_description, 'launch', 'robot_state_publisher.launch.py')
+    #     ]),
+    #     launch_arguments={
+    #         'jsp_gui': jsp_gui,
+    #         'use_camera': use_camera,
+    #         'use_gazebo': use_gazebo,
+    #         'use_rviz': use_rviz,
+    #         'use_sim_time': use_sim_time
+    #     }.items(),
+    #     condition=IfCondition(use_robot_state_pub)
+    # )
+
     # Include ROS 2 Controllers launch file if enabled
     load_controllers_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([

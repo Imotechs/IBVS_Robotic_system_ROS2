@@ -12,6 +12,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
+        (os.path.join('share', package_name, 'materials/textures'), glob('materials/textures/*.png')),
         # Install URDF files
         (os.path.join('share', package_name, 'config'), glob('config/*')),
         (os.path.join('share', package_name, 'urdf'), glob('urdf/*')),
@@ -30,6 +31,7 @@ setup(
             'move_arm = robot_bringup.move_arm:main',
             'conveyor_controller = robot_bringup.conveyor_control:main',
             'product_spawner = robot_bringup.product_spawner:main',
+            'move_product = robot_bringup.move_products:main',
 
         ],
     },

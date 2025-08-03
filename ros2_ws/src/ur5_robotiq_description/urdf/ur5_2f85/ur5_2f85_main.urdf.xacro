@@ -58,8 +58,8 @@
   <link name="world"/> 
 
   <gazebo>
-    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-        <ros>
+    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+            <ros>
           <namespace>$(arg namespace)</namespace>
         </ros>
         <robot_param>robot_description</robot_param>
