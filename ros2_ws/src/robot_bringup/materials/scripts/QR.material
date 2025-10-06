@@ -1,0 +1,13 @@
+material QRMaterial
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture kinsta.png
+      }
+    }
+  }
+}

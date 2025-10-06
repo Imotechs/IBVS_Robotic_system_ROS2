@@ -4,41 +4,69 @@ from threading import Lock
 import subprocess
 import os
 import time
+from dataclasses import dataclass
 
 from ament_index_python.packages import get_package_share_directory
-from geometry_msgs.msg import Twist
+from std_msgs.msg import Float32MultiArray
+from conveyorbelt_msgs.srv import ConveyorBeltControl
 from gazebo_msgs.srv import GetModelState
-from conveyorbelt_msgs.srv import ConveyorBeltControl  # custom service
+from geometry_msgs.msg import Point
+
+@dataclass
+class Product:
+    name: str
+    spawn_time: float
+    x: float
+    y: float
+    z: float
+    is_active: bool = True
 
 class ConveyorBeltNode(Node):
     def __init__(self):
         super().__init__('conveyor_belt_node')
 
-        # URDF file path
+        # Product SDF file
         self.urdf_path = os.path.join(
             get_package_share_directory('robot_bringup'),
-            'urdf', 'product.urdf'
+            'urdf', 'product.sdf'
         )
+        self.get_logger().info(f'Product SDF path: {self.urdf_path}')
 
         # Parameters
         self.prefix = self.declare_parameter('product_name_prefix', 'product').value
-        self.interval = self.declare_parameter('spawn_interval', 20.0).value
+        self.spawn_interval = self.declare_parameter('spawn_interval', 20.0).value
         self.end_x = self.declare_parameter('belt_end_x', 5.0).value
         self.vel = self.declare_parameter('belt_velocity', 0.1).value
-
+        self.last_spawn_time = time.time()
         # State
-        self.counter = 0
-        self.node_publishers = {}  # name: publisher
+        self.counter = 20
         self.lock = Lock()
-        self.speed = self.declare_parameter('belt_speed', 40.0).value
-          # Control the belt speed
+        self.belt_speed = self.declare_parameter('belt_speed', 40.0).value
+        
+
+        # Conveyor control client
         self.cli = self.create_client(ConveyorBeltControl, '/CONVEYORPOWER')
         while not self.cli.wait_for_service(timeout_sec=2.0):
-             self.get_logger().info('Waiting for /CONVEYORPOWER service...')
+            self.get_logger().info('Waiting for /CONVEYORPOWER service...')
+        self.set_belt_speed(self.belt_speed)
 
-        # Start spawning loop and movement
-        self.create_timer(self.interval, self.spawn_product)
-        self.set_belt_speed(self.speed)
+        # Publisher for feature points
+        self.cord_pub = self.create_publisher(Point, '/product_coords', 10)
+
+        # Try different possible service names for GetModelState
+
+        
+        self.get_model_cli = None
+        self.service_ready = False
+        
+        # Keep track of spawned products with their spawn time
+        self.product_list = []  # {name: spawn_time}
+        self.spawned_products = []  # List of product names for Gazebo queries
+
+        # Timer for spawning
+        self.create_timer(1.0, self.update_products)
+        
+
 
     def spawn_product(self):
         self.counter += 1
@@ -46,37 +74,73 @@ class ConveyorBeltNode(Node):
         self.get_logger().info(f"Spawning {name}...")
 
         try:
-            subprocess.Popen([
+            result = subprocess.Popen([
                 'ros2', 'run', 'gazebo_ros', 'spawn_entity.py',
                 '-entity', name,
                 '-file', self.urdf_path,
                 '-x', '0.8', '-y', '-5.0', '-z', '0.78'
             ])
+            
+            # Add to tracking immediately with spawn time
+            with self.lock:
+                product = Product(
+                    name=name,
+                    spawn_time=time.time(),
+                    x=0.8,      # Initial X position
+                    y=-5.0,     # Initial Y position  
+                    z=0.78      # Initial Z position
+                )
+                self.product_list.append(product)
+                self.spawned_products.append(name)
+            
+            self.get_logger().info(f"Added {name} to tracking. Total: {len(self.spawned_products)}")
+            
         except Exception as e:
             self.get_logger().error(f"Failed to spawn {name}: {e}")
-            return
 
-        # Delay to allow spawning
-        time.sleep(1.0)
-
-      
-    def set_belt_speed(self,speed):
+    def set_belt_speed(self, speed):
         req = ConveyorBeltControl.Request()
         req.power = float(speed)
-
         future = self.cli.call_async(req)
-        def done_cb(fut):
-            try:
-                res = fut.result()
-                if hasattr(res, 'success') and res.success:
-                    self.get_logger().info(f"Conveyor set to {speed:.1f}% power.")
-                else:
-                    self.get_logger().warn("Failed to set conveyor speed.")
-            except Exception as e:
-                self.get_logger().error(f"Service call failed: {e}")
+        future.add_done_callback(self._belt_speed_done_cb)
 
-        future.add_done_callback(done_cb)
-        
+    def _belt_speed_done_cb(self, fut):
+        try:
+            res = fut.result()
+            if hasattr(res, 'success') and res.success:
+                self.get_logger().info(f"Conveyor set to {self.belt_speed:.1f}% power.")
+            else:
+                self.get_logger().warn("Failed to set conveyor speed.")
+        except Exception as e:
+            self.get_logger().error(f"Service call failed: {e}")
+
+    def update_products(self):
+            current_time = time.time()
+            # Spawn new product periodically
+            if current_time - self.last_spawn_time > self.spawn_interval:
+                self.spawn_product()
+                self.last_spawn_time = current_time
+
+            for product in self.product_list[:]:
+                # Update position
+                #product['x'] += self.belt_speed * 0.05
+                product.x += self.belt_speed * 0.05
+                # Publish coordinates
+                msg = Point()
+                msg.x = product.x
+                msg.y = product.y  
+                msg.z = product.z
+                self.cord_pub.publish(msg)
+                
+                # Also publish as Float32MultiArray for compatibility
+                # array_msg = Float32MultiArray()
+                # array_msg.data = [product.x, product.y, product.z]
+                # self.cord_pub.publish(array_msg)
+
+                # Optionally remove product when off the belt
+                # if product.x > self.belt_length:
+                #     self.products.remove(product)
+                    
 def main(args=None):
     rclpy.init(args=args)
     node = ConveyorBeltNode()

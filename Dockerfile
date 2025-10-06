@@ -104,6 +104,7 @@ sudo apt install ros-humble-ros-gz-sim-demos
 # sudo apt update
 # sudo 
 # ros-humble-gz-ros2-control
+qrcode with plender :https://www.youtube.com/watch?v=rsD4U9nc_O8
 
 """
 To be added

@@ -54,7 +54,7 @@ def load_robot(context, *args, **kwargs):
     gripper_name = LaunchConfiguration('gripper_name', default='robotiq_2f_85')
     position_x = LaunchConfiguration('position_x', default='0.2')
     position_y = LaunchConfiguration('position_y', default='0.0')
-    orientation_yaw = LaunchConfiguration('orientation_yaw', default='0.0')
+    orientation_yaw = LaunchConfiguration('orientation_yaw', default='3.5')
 
     robot_name_val = robot_name.perform(context)
     namespace_val = namespace.perform(context)
@@ -238,53 +238,3 @@ def generate_launch_description():
         gazebo_classic_node,
         OpaqueFunction(function=load_robot)
     ])
-
-# def generate_launch_description():
-#     ign_gz = LaunchConfiguration('ign_gz', default='True')
-    
-#     # Loading Gazebo
-#     world = os.path.join(get_package_share_directory("ridgeback_ur5_gazebo"), "worlds/empty.world")
-#     gazebo_classic_node = IncludeLaunchDescription(
-#             PythonLaunchDescriptionSource(
-#                 [os.path.join(get_package_share_directory("gazebo_ros"), "launch"), "/gazebo.launch.py"]
-#             ),
-#             launch_arguments={
-#                 'world': world,
-#                 'verbose': 'true',
-#                 'pause': 'false'
-#             }.items(),
-#             condition=IfCondition(ign_gz)
-#         )
-
-#     from launch.substitutions import Command, PathJoinSubstitution
-#     from launch_ros.substitutions import FindPackageShare
-#     pkg_dir = get_package_share_directory('ur5_robotiq_description')
-
-#     robot_xacro = Command([
-#         'xacro ', os.path.join(pkg_dir, 'urdf/ur5_2f85/ur5_2f85_main.urdf.xacro'),
-#         ])
-#     robot_description = {"robot_description": robot_xacro}
-
-#     controller_config = PathJoinSubstitution([
-#                     FindPackageShare("ridgeback_ur5_gazebo"),
-#                     "config",
-#                     "ur5_2f85_controllers.yaml"
-#                         ])
-#     manager_node =Node(
-#             package='controller_manager',
-#             executable='ros2_control_node',
-#                     parameters=[robot_description, controller_config],
-#                     output='screen'
-#                 )
-
-#     return LaunchDescription([
-#         DeclareLaunchArgument(
-#             name="ign_gz",
-#             default_value='True',
-#             description="Use gazebo simulation",
-#             choices=["True", "False"]
-#         ),
-#         manager_node,
-#         gazebo_classic_node,
-#         OpaqueFunction(function=load_robot)
-#     ])

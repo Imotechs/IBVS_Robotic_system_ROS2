@@ -1,38 +1,20 @@
-<?xml version="1.0"?>
-<sdf version="1.7">
-  <model name="product">
-    <link name="link">
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.1 0.1 0.1</size>
-          </box>
-        </geometry>
-      </collision>
-      <visual name="visual">
-        <geometry>
-          <box>
-            <size>0.1 0.1 0.1</size>
-          </box>
-        </geometry>
-        <material>
-          <ambient>0.8 0.2 0.2 1</ambient>
-          <diffuse>0.8 0.2 0.2 1</diffuse>
-          <specular>0.1 0.1 0.1 1</specular>
-        </material>
-      </visual>
-      <inertial>
-        <mass>0.5</mass>
-        <inertia>
-          <ixx>0.001</ixx>
-          <ixy>0.0</ixy>
-          <ixz>0.0</ixz>
-          <iyy>0.001</iyy>
-          <iyz>0.0</iyz>
-          <izz>0.001</izz>
-        </inertia>
-      </inertial>
-    </link>
+<?xml version="1.0" ?>
+<sdf version="1.6">
+
+  <model name="box">
     <static>false</static>
+
+    <!-- Include the actual product geometry -->
+    <include>
+      <uri>model://product</uri>
+      <name>product_model</name>
+      <pose>0 0 0 0 0 0</pose>
+      <scale>2 2 2</scale>
+    </include>
+
+    <!-- Optional: add a small offset or unique name per spawn -->
+    <!-- Your ROS spawn script can override pose dynamically -->
+    
   </model>
+
 </sdf>

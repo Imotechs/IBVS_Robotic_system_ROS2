@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<robot name="product_box" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <link name="box_link">
+    <!-- Main box visual -->
+    <visual name="box_visual">
+      <geometry>
+        <box size="0.2 0.2 0.1"/>
+      </geometry>
+      <material name="Gazebo/Red"/>
+    </visual>
+
+    <!-- Main box collision -->
+    <collision name="box_collision">
+      <geometry>
+        <box size="0.2 0.2 0.1"/>
+      </geometry>
+    </collision>
+
+    <!-- Inertial properties (heavier & realistic) -->
+    <inertial>
+      <mass value="0.5"/> <!-- 500 g -->
+      <inertia ixx="0.002" ixy="0.0" ixz="0.0"
+               iyy="0.002" iyz="0.0" izz="0.002"/>
+    </inertial>
+
+    <!-- QR Code plate on Top Surface -->
+    <visual name="qr_code_top">
+      <origin xyz="0 0 0.051" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.08 0.08 0.001"/>
+      </geometry>
+      <material>
+        <script>
+          <uri>model://robot_bringup/materials/scripts</uri>
+          <uri>model://robot_bringup/materials/textures</uri>
+          <name>QRBox/QRMaterial</name>
+        </script>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Gazebo-specific properties -->
+  <gazebo reference="box_link">
+    <material>Gazebo/Red</material>
+    <!-- Friction & damping to prevent slipping -->
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <kp>100000.0</kp>
+    <kd>1.0</kd>
+    <maxContacts>10</maxContacts>
+    <selfCollide>false</selfCollide>
+  </gazebo>
+
+</robot>

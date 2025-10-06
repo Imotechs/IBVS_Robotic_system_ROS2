@@ -12,11 +12,17 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
-        (os.path.join('share', package_name, 'materials/textures'), glob('materials/textures/*.png')),
+        (os.path.join('share', package_name, 'materials/textures'), glob('materials/textures/*')),
+        (os.path.join('share', package_name, 'materials/scripts'), glob('materials/scripts/*')),
+
         # Install URDF files
         (os.path.join('share', package_name, 'config'), glob('config/*')),
         (os.path.join('share', package_name, 'urdf'), glob('urdf/*')),
         (os.path.join('share', package_name, 'launch'), glob('launch/*')),
+        # (os.path.join('share', package_name, 'models'), [f for f in glob('models/**/*', recursive=True) if os.path.isfile(f)],),        
+        (os.path.join('share', package_name, 'meshes'), glob('meshes/*')),
+        (os.path.join('share', package_name, 'models'), glob('models/*')),
+
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -30,7 +36,6 @@ setup(
             'camera_view = robot_bringup.camera_view:main',
             'move_arm = robot_bringup.move_arm:main',
             'conveyor_controller = robot_bringup.conveyor_control:main',
-            'product_spawner = robot_bringup.product_spawner:main',
             'move_product = robot_bringup.move_products:main',
 
         ],

@@ -3,7 +3,9 @@
   <xacro:macro name="ur5_ros2_control" params="tf_prefix initial_positions:=${dict(shoulder_pan_joint=0.0,shoulder_lift_joint=-1.57,elbow_joint=0.0,wrist_1_joint=-1.57,wrist_2_joint=0.0,wrist_3_joint=0.0)}">
     <ros2_control name="IgnitionSystem" type="system">
       <hardware>
-          <plugin>ign_ros2_control/IgnitionSystem</plugin>
+          <!-- <plugin>ign_ros2_control/IgnitionSystem</plugin> -->
+          <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+
       </hardware>
       <joint name="${tf_prefix}shoulder_pan_joint">
         <command_interface name="position"/>

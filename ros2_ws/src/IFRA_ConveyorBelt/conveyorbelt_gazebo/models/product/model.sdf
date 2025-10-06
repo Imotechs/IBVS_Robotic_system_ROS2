@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="product_box">
+    <static>false</static>
+
+    <!-- Main product link -->
+    <link name="box">
+      <pose>0 0 0 0 0 0</pose>
+
+      <!-- Visual -->
+      <visual name="box_visual">
+        <geometry>
+          <mesh>
+            <uri>model://product/meshes/product1.dae</uri>
+            <scale>5 5 5</scale> <!-- increase significantly -->
+          </mesh>
+        </geometry>
+       
+      </visual>
+
+      <!-- Collision -->
+      <collision name="box_collision">
+        <geometry>
+          <mesh>
+            <uri>model://product/meshes/product1.dae</uri>
+            <scale>5 5 5</scale> <!-- increase significantly -->
+          </mesh>
+        </geometry>
+      </collision>
+
+      <!-- Inertia -->
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.008333</ixx>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyy>0.008333</iyy>
+          <iyz>0.0</iyz>
+          <izz>0.008333</izz>
+        </inertia>
+      </inertial>
+    </link>
+
+  </model>
+</sdf>
