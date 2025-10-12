@@ -11,15 +11,62 @@ import numpy as np
 import pathlib
 import sys
 import os
+from ament_index_python.packages import get_package_share_directory
+import os
+import sys
 
-# ---------------- CONFIG ----------------
-if sys.platform == "win32":
-    pathlib.PosixPath = pathlib.WindowsPath
+# -------------------------------------------------------
+# ✅ Add YOLOv5 path dynamically
+# -------------------------------------------------------
+pkg_share = get_package_share_directory('robot_bringup')
+yolo_dir = os.path.join(pkg_share, 'models', 'yolov5')
+if yolo_dir not in sys.path:
+    sys.path.insert(0, yolo_dir)
+    print(f"[INFO] Added YOLOv5 path to sys.path: {yolo_dir}")
 
 
+# Optional: stop Ultralytics auto-install noise
+os.environ.setdefault('YOLOV5_SUPPRESS', '1')
+os.environ.setdefault('YOLOV5_NO_AUTOINSTALL', '1')
+os.environ.setdefault('GIT_DISCOVERY_ACROSS_FILESYSTEM', '1')
 
+# 2) Allowlist common YOLOv5 classes + torch containers (safe for your own weights)
+try:
+    safe_classes = []
+    try:
+        from models.yolo import DetectionModel, Detect
+        safe_classes += [DetectionModel, Detect]
+    except Exception as e:
+        print(f"[WARN] YOLOv5 yolo module not fully available: {e}")
 
+    try:
+        from models.common import (
+            Conv, Bottleneck, C3, SPPF, Concat, BottleneckCSP, Focus,
+        )
+        safe_classes += [Conv, Bottleneck, C3, SPPF, Concat, BottleneckCSP, Focus]
+    except Exception as e:
+        print(f"[WARN] YOLOv5 common module not fully available: {e}")
 
+    # Torch containers often appear in checkpoints
+    from torch.nn.modules.container import Sequential, ModuleList, ModuleDict
+    safe_classes += [Sequential, ModuleList, ModuleDict]
+
+    if safe_classes:
+        torch.serialization.add_safe_globals(safe_classes)
+        print(f"[INFO] Registered {len(safe_classes)} YOLOv5/Torch classes for safe loading.")
+except Exception as e:
+    print(f"[WARN] Could not register safe globals: {e}")
+
+# 3) Force weights_only=False for this process (PyTorch ≥2.6)
+try:
+    _orig_torch_load = torch.load
+    def _torch_load_no_weights_only(*args, **kwargs):
+        kwargs['weights_only'] = False
+        return _orig_torch_load(*args, **kwargs)
+    torch.load = _torch_load_no_weights_only
+    print("[INFO] Patched torch.load to use weights_only=False.")
+except Exception as e:
+    print(f"[WARN] Could not patch torch.load: {e}")
 
 # ---------------- ROS2 NODE ----------------
 class CameraQRCodeViewer(Node):
@@ -29,8 +76,8 @@ class CameraQRCodeViewer(Node):
         pkg_share = get_package_share_directory('robot_bringup')
         self.get_logger().info(f"Package share directory: {pkg_share}")
 
-        yolo_dir = os.path.join(pkg_share, 'models','yolo', 'yolov5')
-        model_path = os.path.join(pkg_share, 'models','yolo', 'content', 'qrcode_model.pt')
+        yolo_dir = os.path.join(pkg_share, 'models', 'yolov5')
+        model_path = os.path.join(pkg_share, 'models','content','qrcode_model.pt')
 
         if not os.path.exists(model_path):
             self.get_logger().error(f"Model file not found: {model_path}")
@@ -41,11 +88,13 @@ class CameraQRCodeViewer(Node):
         # ---------------------------------------------------------------------
         self.get_logger().info("Loading YOLOv5 model...")
         self.model = torch.hub.load(
-            yolo_dir,
-            'custom',
-            path=model_path,
-            source='local'
-        )
+                yolo_dir,
+                'custom',
+                path=model_path,
+                source='local',
+                force_reload=False,
+                trust_repo=True  # ✅ ensure it doesn't trigger git detection
+            )
         self.model.conf = 0.25
         self.model.iou = 0.45
         self.get_logger().info("YOLOv5 model loaded successfully.")

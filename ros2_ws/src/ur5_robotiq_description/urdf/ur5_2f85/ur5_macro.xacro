@@ -97,6 +97,8 @@
     non_blocking_read:=true
     keep_alive_count:=2"
     >
+    <xacro:property name="arm_scale" value="1.20"/>
+
 
     <!-- Load configuration data from the provided .yaml files -->
     <xacro:read_model_data
@@ -378,7 +380,7 @@
     <joint name="${tf_prefix}elbow_joint" type="revolute">
       <parent link="${tf_prefix}upper_arm_link" />
       <child link="${tf_prefix}forearm_link" />
-      <origin xyz="${forearm_x} ${forearm_y} ${forearm_z}" rpy="${forearm_roll} ${forearm_pitch} ${forearm_yaw}" />
+      <origin xyz="${forearm_x} ${forearm_y} ${forearm_z * arm_scale}" rpy="${forearm_roll} ${forearm_pitch} ${forearm_yaw}" />
       <axis xyz="0 0 1" />
       <limit lower="${elbow_joint_lower_limit}" upper="${elbow_joint_upper_limit}"
         effort="${elbow_joint_effort_limit}" velocity="${elbow_joint_velocity_limit}"/>
