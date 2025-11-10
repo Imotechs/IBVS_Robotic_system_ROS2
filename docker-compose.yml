@@ -6,7 +6,12 @@ services:
     network_mode: host
     privileged: true
     environment:
-      - DISPLAY=host.docker.internal:0
+      - DISPLAY=172.30.224.1:0
+      - QT_X11_NO_MITSHM=1
+      - LIBGL_ALWAYS_SOFTWARE=1
+      - MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
+      - QT_QPA_PLATFORM=xcb
+      - RVIZ_RENDER_SYSTEM=ogre2
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./ros2_ws:/ros2_ws
@@ -14,6 +19,8 @@ services:
     - /dev/video0:/dev/video0
     - /dev/video1:/dev/video1
     - /dev/video2:/dev/video2
+    - /dev/dri:/dev/dri               
+
     working_dir: /ros2_ws
     stdin_open: true
     tty: true

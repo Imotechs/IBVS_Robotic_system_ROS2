@@ -9,7 +9,7 @@
       <uri>model://product</uri>
       <name>product_model</name>
       <pose>0 0 0 0 0 0</pose>
-      <scale>2 2 2</scale>
+      <scale>0.5 1 2</scale>
     </include>
 
     <!-- Optional: add a small offset or unique name per spawn -->

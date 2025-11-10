@@ -1,17 +1,19 @@
-# This config file is used by ros2_control
+# robotiq_2f85_controllers.yaml
 controller_manager:
   ros__parameters:
-    update_rate: 100  # Hz
-
+    update_rate: 100
     robotiq_2f_85_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
+      type: position_controllers/GripperActionController
+      invert: true
 
 robotiq_2f_85_controller:
   ros__parameters:
-    joints:
-      - robotiq_85_left_knuckle_joint
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
+    joint: robotiq_85_left_knuckle_joint   # <-- REQUIRED
+    command_interface: position
+    invert: true
+    use_effort_interface: false            # typical setup
+    use_speed_interface: true
+    max_velocity: 0.5
+    goal_tolerance: 0.001
+    stall_velocity_threshold: 0.001
+    stall_timeout: 1.0

@@ -10,18 +10,20 @@ import math
 class RobotWarmUp(Node):
     def __init__(self):
         super().__init__('ur5_warm_up_routine')
-        self._client = ActionClient(self, FollowJointTrajectory, '/manipulator_controller/follow_joint_trajectory')
-        
-        # UR5 joint names
+        self._client = ActionClient(
+        self,
+            FollowJointTrajectory,
+            '/joint_trajectory_controller/follow_joint_trajectory'
+        )
+
         self.joint_names = [
-            'ur_arm_shoulder_pan_joint',
-            'ur_arm_shoulder_lift_joint',
-            'ur_arm_elbow_joint',
-            'ur_arm_wrist_1_joint',
-            'ur_arm_wrist_2_joint',
-            'ur_arm_wrist_3_joint'
+            'shoulder_pan_joint',
+            'shoulder_lift_joint',
+            'elbow_joint',
+            'wrist_1_joint',
+            'wrist_2_joint',
+            'wrist_3_joint'
         ]
-        
         # Standing position (common home position for UR5)
         self.standing_position = [0.0, -1.57, 1.57, -1.57, -1.57, 0.0]
         

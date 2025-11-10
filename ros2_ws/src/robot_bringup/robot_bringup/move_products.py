@@ -34,12 +34,12 @@ class ConveyorBeltNode(Node):
 
         # Parameters
         self.prefix = self.declare_parameter('product_name_prefix', 'product').value
-        self.spawn_interval = self.declare_parameter('spawn_interval', 20.0).value
+        self.spawn_interval = self.declare_parameter('spawn_interval', 40.0).value
         self.end_x = self.declare_parameter('belt_end_x', 5.0).value
         self.vel = self.declare_parameter('belt_velocity', 0.1).value
         self.last_spawn_time = time.time()
         # State
-        self.counter = 20
+        self.counter = 0
         self.lock = Lock()
         self.belt_speed = self.declare_parameter('belt_speed', 40.0).value
         
@@ -49,12 +49,6 @@ class ConveyorBeltNode(Node):
         while not self.cli.wait_for_service(timeout_sec=2.0):
             self.get_logger().info('Waiting for /CONVEYORPOWER service...')
         self.set_belt_speed(self.belt_speed)
-
-        # Publisher for feature points
-        self.cord_pub = self.create_publisher(Point, '/product_coords', 10)
-
-        # Try different possible service names for GetModelState
-
         
         self.get_model_cli = None
         self.service_ready = False
@@ -78,7 +72,7 @@ class ConveyorBeltNode(Node):
                 'ros2', 'run', 'gazebo_ros', 'spawn_entity.py',
                 '-entity', name,
                 '-file', self.urdf_path,
-                '-x', '0.8', '-y', '-5.0', '-z', '0.78'
+                '-x', '0.55', '-y', '-5.0', '-z', '0.78'
             ])
             
             # Add to tracking immediately with spawn time
@@ -116,30 +110,11 @@ class ConveyorBeltNode(Node):
 
     def update_products(self):
             current_time = time.time()
-            # Spawn new product periodically
             if current_time - self.last_spawn_time > self.spawn_interval:
                 self.spawn_product()
                 self.last_spawn_time = current_time
 
-            for product in self.product_list[:]:
-                # Update position
-                #product['x'] += self.belt_speed * 0.05
-                product.x += self.belt_speed * 0.05
-                # Publish coordinates
-                msg = Point()
-                msg.x = product.x
-                msg.y = product.y  
-                msg.z = product.z
-                self.cord_pub.publish(msg)
-                
-                # Also publish as Float32MultiArray for compatibility
-                # array_msg = Float32MultiArray()
-                # array_msg.data = [product.x, product.y, product.z]
-                # self.cord_pub.publish(array_msg)
-
-                # Optionally remove product when off the belt
-                # if product.x > self.belt_length:
-                #     self.products.remove(product)
+           
                     
 def main(args=None):
     rclpy.init(args=args)

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<robot name="ur5_ee" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- === Include adapter & gripper macros === -->
+  <xacro:include filename="$(find robotiq_description)/urdf/ur_to_robotiq_adapter.urdf.xacro"/>
+  <xacro:include filename="$(find robotiq_description)/urdf/robotiq_2f_85_macro.urdf.xacro"/>
+  <xacro:include filename="$(find robot_bringup)/urdf/camera.urdf.xacro"/>
+ 
+
+
+  <!-- === Adapter: from UR5 tool flange to gripper base === -->
+
+  <xacro:ur_to_robotiq
+      prefix=""
+      parent="tool0"
+      child="robotiq_base_link"
+      rotation="0.0"/>
+
+  <!-- === Robotiq 2F-85 gripper itself === -->
+  <xacro:robotiq_gripper
+      prefix=""
+      name="robotiq_2f_85"
+      parent="robotiq_base_link"
+      include_ros2_control="false">
+      <origin xyz="0 0 0.0" rpy="0 0 0" />
+  </xacro:robotiq_gripper>
+
+</robot>

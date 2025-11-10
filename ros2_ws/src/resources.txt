@@ -1,1 +1,11 @@
 base stater cmd :ros2 launch robot_bringup combined_launch.xml
+rosdep update && rosdep install --ignore-src --from-paths . -y
+export LIBGL_ALWAYS_SOFTWARE=1
+export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/ros2_ws/install/robotiq_description/share
+export GAZEBO_RESOURCE_PATH=$GAZEBO_RESOURCE_PATH:/ros2_ws/install/robotiq_description/share
+
+pip install --force-reinstall setuptools==58.2.0
+
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+test: ros2 launch ur_simulation_gazebo ur_sim_control.launch.py

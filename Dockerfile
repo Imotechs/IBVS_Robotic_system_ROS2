@@ -90,9 +90,10 @@ RUN git clone -b humble https://github.com/gazebosim/ros_gz.git
 # Install ROS Dependencies via rosdep
 # ----------------------------------------------------------
 WORKDIR /ros2_ws
-RUN apt-get update && rosdep update && \
-    rosdep install --from-paths src --ignore-src -r -y
-
+RUN apt-get update && \
+        rosdep update && \
+        rosdep install --ignore-src --from-paths . -y && \
+        apt-get clean && rm -rf /var/lib/apt/lists/*
 # ----------------------------------------------------------
 # Build the Workspace
 # ----------------------------------------------------------
@@ -102,10 +103,14 @@ RUN pip install "setuptools<69" && \
 # Source Environments at Startup
 # ----------------------------------------------------------
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc && \
-    echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc && \
-    echo 'export GAZEBO_MODEL_PATH=/ros2_ws/src/ridgeback_ur5_gazebo/models' >> ~/.bashrc
+    echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc 
+# Gazebo environment fixes
+ENV GAZEBO_MODEL_PATH=/usr/share/gazebo-11/models \
+    GAZEBO_PLUGIN_PATH=/opt/ros/humble/lib \
+    GAZEBO_RESOURCE_PATH=/usr/share/gazebo-11
 
 # ----------------------------------------------------------
 # Default Command
+#pip install setuptools==69.5.1
 # ----------------------------------------------------------
 CMD ["bash"]
