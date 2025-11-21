@@ -41,7 +41,7 @@ class ConveyorBeltNode(Node):
         # State
         self.counter = 0
         self.lock = Lock()
-        self.belt_speed = self.declare_parameter('belt_speed', 40.0).value
+        self.belt_speed = self.declare_parameter('belt_speed', 20.0).value
         
 
         # Conveyor control client

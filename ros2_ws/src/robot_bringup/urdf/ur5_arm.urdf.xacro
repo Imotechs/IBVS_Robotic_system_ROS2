@@ -132,6 +132,9 @@
      <origin xyz="0 0 0.8" rpy="0 0 0" />          <!-- position robot in the world -->
    </xacro:ur_robot>
 
+  <!-- Velocity control (for IBVS / forward_velocity_controller) -->
+  <xacro:ur_arm_transmission prefix="" hw_interface="VelocityJointInterface"/>
+
 
    <!-- === Camera before the gripper === -->
     <xacro:add_camera parent_link="wrist_3_link"/>

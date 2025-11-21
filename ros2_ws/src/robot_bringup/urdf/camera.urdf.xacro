@@ -64,6 +64,30 @@
       </inertial>
     </link>
 
+       
+    <!-- ===================== -->
+    <!-- Optical frame (REP-103) -->
+    <!-- x right, y down, z forward -->
+    <!-- ===================== -->
+    <link name="camera_optical_frame">
+      <inertial>
+        <mass value="0.0001"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia
+          ixx="1e-6" iyy="1e-6" izz="1e-6"
+          ixy="0.0" ixz="0.0" iyz="0.0"/>
+      </inertial>
+    </link>
+
+    <joint name="camera_optical_joint" type="fixed">
+      <parent link="camera_lens_link"/>
+      <child link="camera_optical_frame"/>
+      <!-- Rotation from URDF link frame (x forward, y left, z up)
+           to optical frame (x right, y down, z forward)
+           R = Rz(pi/2) * Rx(-pi/2) → rpy = (-pi/2, 0, -pi/2) -->
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    </joint>
+
     <!-- ===================== -->
     <!-- Gazebo Camera Sensor -->
     <!-- ===================== -->

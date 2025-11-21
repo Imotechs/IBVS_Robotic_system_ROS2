@@ -9,3 +9,11 @@ pip install --force-reinstall setuptools==58.2.0
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 test: ros2 launch ur_simulation_gazebo ur_sim_control.launch.py
+
+ ros2 control load_controller --set-state active forward_velocity_controller
+ ros2 control set_controller_state joint_trajectory_controller inactive
+
+sudo apt update
+sudo apt install ros-humble-tf-transformations
+
+ ros2 control switch_controllers   --deactivate joint_trajectory_controller   --activate forward_velocity_controller   --strict

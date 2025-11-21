@@ -121,18 +121,18 @@ def launch_setup(context, *args, **kwargs):
     from launch.actions import TimerAction
 
     # Wait 5 seconds before spawning controllers
-    delayed_joint_trajectory_spawner = TimerAction(
-        period=5.0,
-        actions=[
-            Node(
-                package="controller_manager",
-                executable="spawner",
-                arguments=[initial_joint_controller, "-c", "/controller_manager"],
-                condition=IfCondition(start_joint_controller),
-                output="screen",
-            )
-        ],
-    )
+    # delayed_joint_trajectory_spawner = TimerAction(
+    #     period=5.0,
+    #     actions=[
+    #         Node(
+    #             package="controller_manager",
+    #             executable="spawner",
+    #             arguments=[initial_joint_controller, "-c", "/controller_manager"],
+    #             condition=IfCondition(start_joint_controller),
+    #             output="screen",
+    #         )
+    #     ],
+    # )
 
     # There may be other controllers of the joints, but this is the initially-started one
     initial_joint_controller_spawner_started = Node(
@@ -203,17 +203,24 @@ def launch_setup(context, *args, **kwargs):
         arguments=["-entity", "ur", "-topic", "robot_description"],
         output="screen",
     )
+    forward_velocity_spawner = Node(
+                package="controller_manager",
+                executable="spawner",
+                arguments=["forward_velocity_controller", "-c", "/controller_manager", "--stopped"],
+            )
+
 
     nodes_to_start = [
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
         delay_rviz_after_joint_state_broadcaster_spawner,
-        delayed_joint_trajectory_spawner,
-        # initial_joint_controller_spawner_stopped,
+        # delayed_joint_trajectory_spawner,
+        initial_joint_controller_spawner_stopped,
         initial_joint_controller_spawner_started,
         gazebo,
         gazebo_spawn_robot,
         gripper_controller_spawner,
+        forward_velocity_spawner,
     ]
 
     return nodes_to_start

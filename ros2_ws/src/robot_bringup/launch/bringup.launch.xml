@@ -1,9 +1,9 @@
 <launch>
-    <!-- Include the bringup launch -->
-    <include file="$(find-pkg-share ridgeback_ur5_gazebo)/launch/bringup.launch.py"/>
   
     <!-- Include the belt launch -->
-    <include file="$(find-pkg-share ridgeback_ur5_gazebo)/launch/belt.launch.py"/>
-    <!-- <node pkg="robot_bringup" exec="move_arm" name="move_arm_node" output="screen"/> -->
+    <!-- <include file="$(find-pkg-share robot_bringup)/launch/belt.launch.py"/> -->
+    <node pkg="robot_bringup" exec="camera_view" name="camera_control" output="screen"/>
+    <!-- <node pkg="robot_bringup" exec="ibvs_control" name="ibvs_control" output="screen"/> -->
+    <node pkg="robot_bringup" exec="move_product" name="belt_products" output="screen"/>
 </launch>
   
