@@ -56,6 +56,9 @@ setup(
             'conveyor_controller = robot_bringup.conveyor_control:main',
             'move_product = robot_bringup.move_products:main',
             'ibvs_control = robot_bringup.ibvs_control:main',
+            'gripper_node = robot_bringup.gripper:main',
+            'dashboard = robot_bringup.dashboard:main',
+
         ],
     },
 )

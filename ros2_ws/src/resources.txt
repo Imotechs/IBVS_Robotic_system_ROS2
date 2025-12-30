@@ -15,5 +15,12 @@ test: ros2 launch ur_simulation_gazebo ur_sim_control.launch.py
 
 sudo apt update
 sudo apt install ros-humble-tf-transformations
+pip install --upgrade --ignore-installed transforms3d
 
  ros2 control switch_controllers   --deactivate joint_trajectory_controller   --activate forward_velocity_controller   --strict
+
+apt-get update
+apt-get install -y ros-${ROS_DISTRO}-rqt-image-view
+
+ros2 run rqt_image_view rqt_image_view --ros-args -r image:=/ibvs/visualization
+rqt --standalone rqt_plot

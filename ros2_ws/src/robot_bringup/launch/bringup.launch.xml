@@ -5,5 +5,6 @@
     <node pkg="robot_bringup" exec="camera_view" name="camera_control" output="screen"/>
     <!-- <node pkg="robot_bringup" exec="ibvs_control" name="ibvs_control" output="screen"/> -->
     <node pkg="robot_bringup" exec="move_product" name="belt_products" output="screen"/>
+    <!-- <node pkg="robot_bringup" exec="gripper_node" name="gripper_n" output="screen"/> -->
 </launch>
   

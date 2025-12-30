@@ -1,0 +1,33 @@
+digraph G {
+"world" -> "base_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"base_link" -> "base"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"base_link" -> "base_link_inertia"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"wrist_3_link" -> "camera_body_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"wrist_2_link" -> "wrist_3_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"camera_body_link" -> "camera_lens_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"camera_lens_link" -> "camera_optical_frame"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"flange" -> "tool0"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"wrist_3_link" -> "flange"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"ur_to_robotiq_link" -> "robotiq_mount_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"tool0" -> "ur_to_robotiq_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"world" -> "ground_plane"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"robotiq_mount_link" -> "robotiq_85_base_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"robotiq_85_left_knuckle_link" -> "robotiq_85_left_finger_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"robotiq_85_base_link" -> "robotiq_85_left_knuckle_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"robotiq_85_right_knuckle_link" -> "robotiq_85_right_finger_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"robotiq_85_base_link" -> "robotiq_85_right_knuckle_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"wrist_3_link" -> "ft_frame"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"upper_arm_link" -> "forearm_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"shoulder_link" -> "upper_arm_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"robotiq_85_left_finger_link" -> "robotiq_85_left_finger_tip_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"robotiq_85_base_link" -> "robotiq_85_left_inner_knuckle_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"robotiq_85_right_finger_link" -> "robotiq_85_right_finger_tip_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"robotiq_85_base_link" -> "robotiq_85_right_inner_knuckle_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"base_link_inertia" -> "shoulder_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"forearm_link" -> "wrist_1_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+"wrist_1_link" -> "wrist_2_link"[label=" Broadcaster: default_authority\nAverage rate: 65.0\nBuffer length: 0.2\nMost recent transform: 470.444\nOldest transform: 470.244\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1765362344.2687237"[ shape=plaintext ] ;
+}->"world";
+}

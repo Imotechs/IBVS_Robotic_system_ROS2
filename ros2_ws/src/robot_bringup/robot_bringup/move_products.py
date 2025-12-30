@@ -3,6 +3,7 @@ from rclpy.node import Node
 from threading import Lock
 import subprocess
 import os
+import random
 import time
 from dataclasses import dataclass
 
@@ -34,12 +35,12 @@ class ConveyorBeltNode(Node):
 
         # Parameters
         self.prefix = self.declare_parameter('product_name_prefix', 'product').value
-        self.spawn_interval = self.declare_parameter('spawn_interval', 40.0).value
+        self.spawn_interval = self.declare_parameter('spawn_interval', 50.0).value
         self.end_x = self.declare_parameter('belt_end_x', 5.0).value
         self.vel = self.declare_parameter('belt_velocity', 0.1).value
         self.last_spawn_time = time.time()
         # State
-        self.counter = 0
+        self.counter = random.choice([0,50,200,500, 60, 30, 896])
         self.lock = Lock()
         self.belt_speed = self.declare_parameter('belt_speed', 20.0).value
         
@@ -72,7 +73,7 @@ class ConveyorBeltNode(Node):
                 'ros2', 'run', 'gazebo_ros', 'spawn_entity.py',
                 '-entity', name,
                 '-file', self.urdf_path,
-                '-x', '0.55', '-y', '-5.0', '-z', '0.78'
+                '-x', '0.65', '-y', '-5.0', '-z', '0.79'
             ])
             
             # Add to tracking immediately with spawn time
@@ -80,9 +81,9 @@ class ConveyorBeltNode(Node):
                 product = Product(
                     name=name,
                     spawn_time=time.time(),
-                    x=0.8,      # Initial X position
+                    x=0.95,      # Initial X position
                     y=-5.0,     # Initial Y position  
-                    z=0.78      # Initial Z position
+                    z=0.79     # Initial Z position
                 )
                 self.product_list.append(product)
                 self.spawned_products.append(name)

@@ -118,7 +118,7 @@
             <remapping>image_raw:=camera/image_raw</remapping>
           </ros>
           <camera_name>tcp</camera_name>
-          <frame_name>camera_lens_link</frame_name>
+          <frame_name>camera_optical_frame</frame_name>
           <publish_rate>30.0</publish_rate>  <!-- inside plugin -->
           <queue_size>1</queue_size>          <!-- inside plugin -->
         </plugin>
